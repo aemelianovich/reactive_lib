@@ -1,11 +1,15 @@
-// export { default as Stream } from './streams/stream';
-
-// import type { Listener } from './interfaces/listener';
 import Stream from './streams/stream.js';
-// import { EventEmitter } from 'node:events';
+import { map, take } from './operators/';
+import { Value, InfiniteArray } from './producers';
 
+// Add Opertators
+Object.defineProperty(Stream.prototype, 'map', { value: map });
+Object.defineProperty(Stream.prototype, 'take', { value: take });
 //
 //
+//
+//
+// Test Examples
 //
 const stream = new Stream<number>([1, 2, 3, 4, 5, 6]);
 
@@ -74,86 +78,57 @@ const combineStream = Stream.combine(mapStream, stream, takeStream);
 })();
 
 //
+// Primitive Values
 //
-//
-const a = Stream.fromValue<number>(3);
+const a = new Value<number>(1);
+const b = new Value<number>(2);
+
+const a_s = new Stream<number>(a);
+const b_s = new Stream<number>(b);
+const c_s = Stream.combine(a_s, b_s);
+const d_s = c_s.map(([aValue, bValue]) => aValue + bValue + 5);
 
 (async () => {
-  for await (const value of a) {
-    console.log('a1:', value);
+  console.log('a_s', await a_s.getValue()); // 1
+  console.log('b_s', await b_s.getValue()); // 2
+  console.log('c_s', await c_s.getValue());
+  console.log('d_s', await d_s.getValue()); // 8
+})();
+
+(async () => {
+  for await (const value of a_s) {
+    console.log('a_s Stream :', value);
   }
 })();
 
-(async () => {
-  for await (const value of a) {
-    console.log('a2:', value);
-  }
-})();
+setTimeout(() => a.updateValue((val) => val + 10), 4000);
 
-a.updateValue((val) => val + 10);
-
-(async () => {
-  for await (const value of a) {
-    console.log('a1:', value);
-  }
-})();
-
-(async () => {
-  for await (const value of a) {
-    console.log('a2:', value);
-  }
-})();
+setTimeout(async () => {
+  console.log('a_s', await a_s.getValue()); // 11
+  console.log('d_s', await d_s.getValue()); // 18
+}, 5000);
 
 //
+// Infinite Array
 //
-//
-const ea = Stream.fromValue<number>(1),
-  eb = Stream.fromValue<number>(2),
-  ec = Stream.combine(ea, eb),
-  ed = ec.map(([aValue, bValue]) => aValue + bValue + 5);
+
+const infArr = new InfiniteArray([51, 52, 53, 54, 55]);
+
+const iArrStream = new Stream(infArr);
 
 (async () => {
-  console.log('ea', ea.getValue());
-})();
-
-(async () => {
-  console.log('eb', await eb.getValue());
-})();
-
-(async () => {
-  console.log('ec', await ec.getValue());
-})();
-
-(async () => {
-  console.log('ed', await ed.getValue());
-})();
-
-(async () => {
-  for await (const value of ed) {
-    console.log('ed1:', value);
+  for await (const value of iArrStream) {
+    console.log('iArrStream 1:', value);
   }
 })();
 
-ea.updateValue((val) => val + 10);
+setTimeout(() => infArr.push(56), 6000);
+setTimeout(() => infArr.push(57), 8000);
+
+const iArrMapTakeStream = iArrStream.take(6).map((val) => val * 10);
 
 (async () => {
-  console.log('ea', await ea.getValue());
-})();
-
-(async () => {
-  console.log('eb', await eb.getValue());
-})();
-
-(async () => {
-  console.log('ec', await ec.getValue());
-})();
-
-(async () => {
-  console.log('ed', await ed.getValue());
-})();
-
-(async () => {
-  for await (const value of ed) {
-    console.log('ed2:', value);
+  for await (const value of iArrMapTakeStream) {
+    console.log('iArrMapTakeStream 1:', value);
   }
 })();
