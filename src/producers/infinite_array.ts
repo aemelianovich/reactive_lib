@@ -1,52 +1,35 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-empty-interface */
+import infiniteIterable from './infinite_iterable';
+
 /**
- * Creates special async iterable array based on passed array
+ * Creates special async iterable Array based on passed Array
  * Async Iterator won't be completed and new value will be generated
  * by push method.
  *
  *
  */
-export default class InfiniteArray<T>
-  extends Array<T>
+class InfiniteArray<T>
+  extends infiniteIterable(Array<any>)
   implements AsyncIterable<T>
 {
-  #resolvers: Array<(value: IteratorResult<T>) => void> = [];
   constructor(arr: Array<T>) {
     super(...arr);
   }
 
   override push(value: T): number {
     const length = super.push(value);
-    if (this.#resolvers !== null) {
-      for (const resolve of this.#resolvers) {
-        resolve({ done: false, value });
-      }
-      this.#resolvers.splice(0, this.#resolvers.length);
-    }
+    // @ts-ignore
+    this.resolve(value);
 
     return length;
   }
 
-  [Symbol.asyncIterator](): AsyncIterableIterator<T> {
-    const setResolve = (cb: (value: IteratorResult<T>) => void) => {
-      this.#resolvers.push(cb);
-    };
-
-    const iterator = super[Symbol.iterator]();
-
-    return {
-      [Symbol.asyncIterator]() {
-        return this;
-      },
-      next() {
-        return new Promise((resolve) => {
-          const { done, value } = iterator.next();
-          if (!done) {
-            resolve({ done: false, value: value });
-          } else {
-            setResolve(resolve);
-          }
-        });
-      },
-    };
+  [Symbol.asyncIterator]() {
+    // @ts-ignore
+    return super[Symbol.asyncIterator]();
   }
 }
+
+export default InfiniteArray;
