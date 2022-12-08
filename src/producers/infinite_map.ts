@@ -6,7 +6,7 @@ import infiniteIterable from './infinite_iterable';
 /**
  * Creates special async iterable Map based on passed Map
  * Async Iterator won't be completed and new value will be generated
- * by push method.
+ * by set method.
  *
  *
  */

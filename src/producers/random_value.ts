@@ -1,9 +1,7 @@
 /**
  * Creates special async iterable producer based on primitive random value
  * between min and max numbers
- * Async Iterator won't be completed and new value will be generated
- * by updateValue method.
- *
+ * Async Iterator won't be completed and new value will be generated.
  *
  */
 export default class RandomValue implements AsyncIterable<number> {
