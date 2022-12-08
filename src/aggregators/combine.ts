@@ -18,6 +18,11 @@ import Stream from '../streams/stream';
  * ----1a-2a-2b-3b-3c-3d-4d--
  * ```
  */
+
+// function combine<
+//   A extends Array<Stream<any>>,
+//   V extends A[number] extends Stream<infer SV> ? SV : unknown,
+// >(...streams: Array<Stream<V>>): Stream<Array<V>> {
 function combine(...streams: Array<Stream<any>>): Stream<Array<any>> {
   const iterable = {
     async *[Symbol.asyncIterator]() {

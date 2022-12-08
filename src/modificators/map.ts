@@ -13,12 +13,19 @@ import Stream from '../streams/stream';
  * --10--30-50----70-----
  * ```
  */
-function map<T, R>(this: Stream<T>, fn: (value: T) => R): Stream<R> {
+function map<T, R>(
+  this: Stream<T>,
+  ...fns: ((value: T | R) => R)[]
+): Stream<R> {
   const stream = this;
   const iterable = {
     async *[Symbol.asyncIterator]() {
       for await (const value of stream) {
-        yield fn(value);
+        let res;
+        for (const fn of fns) {
+          res = fn(res ?? value);
+        }
+        yield <R>res;
       }
     },
   };

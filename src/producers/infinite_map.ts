@@ -4,26 +4,26 @@
 import infiniteIterable from './infinite_iterable';
 
 /**
- * Creates special async iterable Array based on passed Array
+ * Creates special async iterable Map based on passed Map
  * Async Iterator won't be completed and new value will be generated
- * by push method.
+ * by set method.
  *
  *
  */
-class InfiniteArray<T>
-  extends infiniteIterable(Array<any>)
-  implements AsyncIterable<T>
+class InfiniteMap<K, V>
+  extends infiniteIterable(Map<any, any>)
+  implements AsyncIterable<[K, V]>
 {
-  constructor(arr: Array<T>) {
-    super(...arr);
+  constructor(map: Map<K, V>) {
+    super(map);
   }
 
-  override push(value: T): number {
-    const length = super.push(value);
+  override set(key: K, value: V): this {
+    super.set(key, value);
     // @ts-ignore
-    this.resolve(value);
+    this.resolve([key, value]);
 
-    return length;
+    return this;
   }
 
   [Symbol.asyncIterator]() {
@@ -32,4 +32,4 @@ class InfiniteArray<T>
   }
 }
 
-export default InfiniteArray;
+export default InfiniteMap;

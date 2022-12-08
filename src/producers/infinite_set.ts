@@ -4,26 +4,26 @@
 import infiniteIterable from './infinite_iterable';
 
 /**
- * Creates special async iterable Array based on passed Array
+ * Creates special async iterable Set based on passed Set
  * Async Iterator won't be completed and new value will be generated
- * by push method.
+ * by add method.
  *
  *
  */
-class InfiniteArray<T>
-  extends infiniteIterable(Array<any>)
+class InfiniteSet<T>
+  extends infiniteIterable(Set<any>)
   implements AsyncIterable<T>
 {
-  constructor(arr: Array<T>) {
-    super(...arr);
+  constructor(set: Set<T>) {
+    super(set);
   }
 
-  override push(value: T): number {
-    const length = super.push(value);
+  override add(value: T): this {
+    super.add(value);
     // @ts-ignore
     this.resolve(value);
 
-    return length;
+    return this;
   }
 
   [Symbol.asyncIterator]() {
@@ -32,4 +32,4 @@ class InfiniteArray<T>
   }
 }
 
-export default InfiniteArray;
+export default InfiniteSet;

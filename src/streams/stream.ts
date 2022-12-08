@@ -3,15 +3,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { fake } from '../decorators';
-import type { Operators } from '../operators';
+import type { Modificators } from '../modificators';
 import StaticStream from './static_stream';
 
-interface Stream<T> extends Operators<T> {}
+interface Stream<T> extends Modificators<T> {}
 
-// Stream is an lazy event emitter.
-// Based on the stream you can create iterator and recieve a new value from the stream
+/**
+ * Stream is an lazy event emitter which can accept any Iterable or AsyncIterable as producer.
+ * Based on the stream you can create AsyncTterator and recieve a new value from the stream
+ *
+ */
 @fake('map')
 @fake('take')
+@fake('filter')
+@fake('enumerate')
 class Stream<T> extends StaticStream<T> implements AsyncIterable<T> {
   #producer: AsyncIterable<T> | Iterable<T>;
 
