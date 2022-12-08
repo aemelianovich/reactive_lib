@@ -15,7 +15,7 @@ Basic structures:
     - filter
     - map
     - take
-  - Aggregators static methods:
+  - Aggregator static methods:
     - combine
     - merge
 
