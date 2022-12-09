@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
 import Stream from '../streams/stream';
+import type { getStreamType, getArrayTypes } from '../types';
 
 /**
  * Merge multiple input streams together to return a stream whose events
@@ -13,12 +14,15 @@ import Stream from '../streams/stream';
  * ```text
  * --1----2-----3--------4---
  * ----a-----b-----c--d------
+ * ------a-----b-----c--d------
  *          merge
- * --1-a--2--b--3--c--d--4---
+ * --1--a--2--b--3--c--d--4---
  * ```
  */
 
-function merge(...streams: Array<Stream<any>>): Stream<Array<any>> {
+function merge<A extends Array<Stream<any>>>(
+  ...streams: A
+): Stream<getArrayTypes<{ [P in keyof A]: getStreamType<A[P]> }>> {
   const iterable = {
     async *[Symbol.asyncIterator]() {
       const iterators = new Map(

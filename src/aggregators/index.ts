@@ -1,4 +1,4 @@
-import combine from './combine';
+import zip from './zip';
 import merge from './merge';
 
-export { combine, merge };
+export { zip, merge };

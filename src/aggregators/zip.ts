@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
 import Stream from '../streams/stream';
+import type { getStreamType } from '../types';
 
 /**
- * Combines multiple input streams together to return a stream whose events
+ * Zip multiple input streams together to return a stream whose events
  * are arrays that collect the latest events from each input stream.
  *
  * It's essentially a way of joining together
@@ -14,16 +15,14 @@ import Stream from '../streams/stream';
  * ```text
  * --1----2-----3--------4---
  * ----a-----b-----c--d------
- *          combine
- * ----1a-2a-2b-3b-3c-3d-4d--
+ *          zip
+ * --[1,a]-[2,a]-[2,b]-[3,b]-[3,c]-[3,d]-[4,d]--
  * ```
  */
 
-// function combine<
-//   A extends Array<Stream<any>>,
-//   V extends A[number] extends Stream<infer SV> ? SV : unknown,
-// >(...streams: Array<Stream<V>>): Stream<Array<V>> {
-function combine(...streams: Array<Stream<any>>): Stream<Array<any>> {
+function zip<A extends Array<Stream<any>>>(
+  ...streams: A
+): Stream<{ [P in keyof A]: getStreamType<A[P]> }> {
   const iterable = {
     async *[Symbol.asyncIterator]() {
       const iterators = streams.map((stream) => stream[Symbol.asyncIterator]());
@@ -51,4 +50,4 @@ function combine(...streams: Array<Stream<any>>): Stream<Array<any>> {
   return new Stream(iterable);
 }
 
-export default combine;
+export default zip;

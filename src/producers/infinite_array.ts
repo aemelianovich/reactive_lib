@@ -20,14 +20,12 @@ class InfiniteArray<T>
 
   override push(value: T): number {
     const length = super.push(value);
-    // @ts-ignore
     this.resolve(value);
 
     return length;
   }
 
-  [Symbol.asyncIterator]() {
-    // @ts-ignore
+  [Symbol.asyncIterator](): AsyncIterableIterator<T> {
     return super[Symbol.asyncIterator]();
   }
 }

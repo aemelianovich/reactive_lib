@@ -16,7 +16,7 @@ Basic structures:
     - map
     - take
   - Aggregator static methods:
-    - combine
+    - zip
     - merge
 
 - Producers:
@@ -145,32 +145,29 @@ Marble diagram:
 Stream static methods that allowds to aggregate diffirent streams into one
 
 ```js
-Stream.combine(...streams: Array<Stream<any>>): Stream<Array<any>>
+Stream.zip(...streams: Array<Stream<any>>): Stream<Array<any>>
 Stream.merge(...streams: Array<Stream<any>>): Stream<Array<any>>
 ```
 
 ```js
-const stream = new Stream() < number > [-1, -2, -3, -4, -5, -6];
-const takeStream = new Stream() < number > [1, 2, 3, 4, 5, 6].take(4);
-const mapStream =
-  new Stream() <
-  number >
-  [1, 2, 3, 4, 5, 6].take(3).map(
-    (val) => val * 10,
-    (val) => val + 13,
-  );
+const stream = new Stream([-1, -2, -3, -4, -5, -6]);
+const takeStream = new Stream([1, 2, 3, 4, 5, 6]).take(4);
+const mapStream = new Stream([1, 2, 3, 4, 5, 6]).take(3).map(
+  (val) => val * 10,
+  (val) => val + 13,
+);
 
-const combineStream = Stream.combine(mapStream, stream, takeStream);
+const zipStream = Stream.zip(mapStream, stream, takeStream);
 
 (async () => {
-  for await (const value of combineStream) {
-    console.log('Combine Stream 1:', value);
+  for await (const value of zipStream) {
+    console.log('Zip Stream 1:', value);
   }
 })();
 
 (async () => {
-  for await (const value of combineStream) {
-    console.log('Combine Stream 2:', value);
+  for await (const value of zipStream) {
+    console.log('Zip Stream 2:', value);
   }
 })();
 
@@ -189,9 +186,9 @@ const mergeStream = Stream.merge(mapStream, stream, takeStream);
 })();
 ```
 
-### Combine:
+### Zip:
 
-Combines multiple input streams together to return a stream whose events
+Zips multiple input streams together to return a stream whose events
 are arrays that collect the latest events from each input stream.
 
 It's essentially a way of joining together
@@ -202,8 +199,8 @@ Marble diagram:
 ```text
 --1----2-----3--------4---
 ----a-----b-----c--d------
-         combine
-----1a-2a-2b-3b-3c-3d-4d--
+         zip
+----[1,a]-[2,a]-[2,b]-[3,b]-[3,c]-[3,d]-[4,d]--
 ```
 
 ### Merge:
@@ -405,7 +402,7 @@ const b = new Value() < number > 2;
 
 const a_s = new Stream() < number > a;
 const b_s = new Stream() < number > b;
-const c_s = Stream.combine(a_s, b_s);
+const c_s = Stream.zip(a_s, b_s);
 const d_s = c_s.map(([aValue, bValue]) => aValue + bValue + 5);
 
 (async () => {

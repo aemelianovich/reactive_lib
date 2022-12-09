@@ -9,6 +9,7 @@ export default class RandomValue implements AsyncIterable<number> {
   max: number;
 
   constructor(min: number, max: number) {
+    // Сделать через стратегию, чтобы можно было выбирать чем генерить рандомные числа
     this.min = Math.ceil(min);
     this.max = Math.floor(max);
   }

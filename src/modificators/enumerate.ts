@@ -13,13 +13,13 @@ import Stream from '../streams/stream';
  * --[0,1]--[1,3]--[2,5]--[3,7]-----
  * ```
  */
-function enumerate<T>(this: Stream<T>): Stream<(number | T)[]> {
+function enumerate<T>(this: Stream<T>): Stream<[number, T]> {
   const stream = this;
   const iterable = {
     async *[Symbol.asyncIterator]() {
       let i = 0;
       for await (const value of stream) {
-        const res = [i, value];
+        const res: [number, T] = [i, value];
         yield res;
         i++;
       }

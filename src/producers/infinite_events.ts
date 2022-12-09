@@ -8,6 +8,7 @@ class InfiniteEvent {
   target: ETarget;
   event: string;
   payload: Event | any[] | null;
+  // Сделать перегрузку конструктора
   constructor(target: ETarget, event: string, payload: Event | any[] | null) {
     this.target = target;
     this.event = event;
@@ -31,6 +32,7 @@ class InfiniteEvents<T extends InfiniteEvent>
     this.event = event;
     this.resolvers = [];
 
+    // Переделать через Map, т.к. легче будет менять код
     if (target instanceof EventTarget) {
       target.addEventListener(event, (e) => {
         const res = new InfiniteEvent(this.target, this.event, e);

@@ -25,6 +25,25 @@ export {
   RandomValue,
 };
 
-// const n_s = new Stream<number>([1, 2, 3, 4]);
-// const s_s = new Stream<string>(['a', 'b', 'c']);
-// const comb_s = Stream.combine(n_s, s_s);
+const infRandomVal = new RandomValue(0, 100);
+
+const iRandomStream = new Stream(infRandomVal)
+  .take(10)
+  .filter((val) => val > 50)
+  .map(
+    (val) => val * 10,
+    (val) => val + 13,
+  )
+  .enumerate();
+
+(async () => {
+  for await (const value of iRandomStream) {
+    console.log('iRandomStream 1:', value);
+  }
+})();
+
+(async () => {
+  for await (const value of iRandomStream) {
+    console.log('iRandomStream 2:', value);
+  }
+})();
