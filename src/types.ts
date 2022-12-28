@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type Stream from './streams/stream';
+import type Stream from './streams/stream.js';
 
 type getStreamType<S extends Stream<any>> = S extends Stream<infer V>
   ? V
@@ -17,9 +17,19 @@ type getIterableCollectionType<I extends IterableCollection<any>> = I extends {
   ? V
   : any;
 
+type getMapKey<T extends Map<any, any>> = T extends Map<infer K, any>
+  ? K
+  : unknown;
+
+type getMapValue<T extends Map<any, any>> = T extends Map<any, infer V>
+  ? V
+  : unknown;
+
 export {
   getStreamType,
   getArrayTypes,
   IterableCollection,
   getIterableCollectionType,
+  getMapKey,
+  getMapValue,
 };

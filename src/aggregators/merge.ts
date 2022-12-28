@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
-import Stream from '../streams/stream';
-import type { getStreamType, getArrayTypes } from '../types';
+import Stream from '../streams/stream.js';
+import type { getStreamType, getArrayTypes } from '../types.js';
 
 /**
  * Merge multiple input streams together to return a stream whose events

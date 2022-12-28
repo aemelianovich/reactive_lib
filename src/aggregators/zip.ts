@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
-import Stream from '../streams/stream';
-import type { getStreamType } from '../types';
+import Stream from '../streams/stream.js';
+import type { getStreamType } from '../types.js';
 
 /**
  * Zip multiple input streams together to return a stream whose events

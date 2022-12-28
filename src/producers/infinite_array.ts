@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import infiniteIterable from './infinite_iterable';
+import infiniteIterable from './infinite_iterable.js';
 
 /**
  * Creates special async iterable Array based on passed Array
@@ -11,7 +11,8 @@ import infiniteIterable from './infinite_iterable';
  *
  */
 class InfiniteArray<T>
-  extends infiniteIterable(Array<any>)
+  // Вывести тип в итераторы
+  extends infiniteIterable(Array)
   implements AsyncIterable<T>
 {
   constructor(arr: Array<T>) {
@@ -26,7 +27,11 @@ class InfiniteArray<T>
   }
 
   [Symbol.asyncIterator](): AsyncIterableIterator<T> {
-    return super[Symbol.asyncIterator]();
+    return <AsyncIterableIterator<T>>super[Symbol.asyncIterator]();
+  }
+
+  [Symbol.iterator](): IterableIterator<T> {
+    return <IterableIterator<T>>super[Symbol.iterator]();
   }
 }
 

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import infiniteIterable from './infinite_iterable';
+import type { getMapKey, getMapValue } from '../types.js';
+import infiniteIterable from './infinite_iterable.js';
 
 /**
  * Creates special async iterable Map based on passed Map
@@ -10,8 +11,12 @@ import infiniteIterable from './infinite_iterable';
  *
  *
  */
-class InfiniteMap<K, V>
-  extends infiniteIterable(Map<any, any>)
+class InfiniteMap<
+    T extends Map<any, any>,
+    K extends getMapKey<T>,
+    V extends getMapValue<T>,
+  >
+  extends infiniteIterable(Map)
   implements AsyncIterable<[K, V]>
 {
   constructor(map: Map<K, V>) {
@@ -20,15 +25,17 @@ class InfiniteMap<K, V>
 
   override set(key: K, value: V): this {
     super.set(key, value);
-    // @ts-ignore
     this.resolve([key, value]);
 
     return this;
   }
 
-  [Symbol.asyncIterator]() {
-    // @ts-ignore
+  [Symbol.asyncIterator](): AsyncIterableIterator<[K, V]> {
     return super[Symbol.asyncIterator]();
+  }
+
+  [Symbol.iterator](): IterableIterator<[K, V]> {
+    return <IterableIterator<[K, V]>>super[Symbol.iterator]();
   }
 }
 

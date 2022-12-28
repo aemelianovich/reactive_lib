@@ -1,4 +1,5 @@
-import zip from './zip';
-import merge from './merge';
+import zip from './zip.js';
+import merge from './merge.js';
+import once from './once.js';
 
-export { zip, merge };
+export { zip, merge, once };

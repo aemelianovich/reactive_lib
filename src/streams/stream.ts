@@ -2,9 +2,9 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { fake } from '../decorators';
-import type { Modificators } from '../modificators';
-import StaticStream from './static_stream';
+import { fake } from '../decorators/index.js';
+import type { Modificators } from '../modificators/index.js';
+import StaticStream from './static_stream.js';
 
 interface Stream<T> extends Modificators<T> {}
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import Stream from '../streams/stream';
+import Stream from '../streams/stream.js';
 
 /**
  * Check each event from the input Stream through a cb(callback) function,

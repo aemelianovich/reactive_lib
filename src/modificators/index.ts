@@ -1,8 +1,8 @@
-import type Stream from '../streams/stream';
-import map from './map';
-import take from './take';
-import filter from './filter';
-import enumerate from './enumerate';
+import type Stream from '../streams/stream.js';
+import map from './map.js';
+import take from './take.js';
+import filter from './filter.js';
+import enumerate from './enumerate.js';
 
 interface Modificators<T> {
   map<R>(this: Stream<T>, ...fns: ((value: T) => R)[]): Stream<R>;

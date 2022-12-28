@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EventEmitter } from 'node:events';
-import type { InfiniteIterable } from './infinite_iterable';
+import type { InfiniteIterable } from './infinite_iterable.js';
 
 type ETarget = EventTarget | EventEmitter;
 

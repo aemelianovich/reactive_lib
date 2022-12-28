@@ -2,7 +2,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import type { IterableCollection, getIterableCollectionType } from '../types';
+import type {
+  IterableCollection,
+  getIterableCollectionType,
+} from '../types.js';
 
 interface InfiniteIterable<T> {
   resolvers: Array<(value: IteratorResult<T>) => void>;

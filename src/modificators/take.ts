@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import Stream from '../streams/stream';
+import Stream from '../streams/stream.js';
 
 /**
  * Lets the first number of events from the input stream pass to the
