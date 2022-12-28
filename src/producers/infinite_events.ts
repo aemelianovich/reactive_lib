@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { EventEmitter } from 'node:events';
 import type { InfiniteIterable } from './infinite_iterable.js';
+
+interface EventEmitter extends NodeJS.EventEmitter {}
 
 type ETarget = EventTarget | EventEmitter;
 
@@ -8,7 +10,7 @@ class InfiniteEvent {
   target: ETarget;
   event: string;
   payload: Event | any[] | null;
-  // Сделать перегрузку конструктора
+  // TO DO: Сделать перегрузку конструктора
   constructor(target: ETarget, event: string, payload: Event | any[] | null) {
     this.target = target;
     this.event = event;
@@ -27,23 +29,28 @@ class InfiniteEvents<T extends InfiniteEvent>
   resolvers: ((value: IteratorResult<T, any>) => void)[];
   target: ETarget;
   event: string;
+  listener: (...args: any[]) => void;
+
   constructor(target: ETarget, event: string) {
     this.target = target;
     this.event = event;
     this.resolvers = [];
-
-    // Переделать через Map, т.к. легче будет менять код
+    // TO DO: Переделать через Map, т.к. легче будет менять код
     if (target instanceof EventTarget) {
-      target.addEventListener(event, (e) => {
+      this.listener = (e) => {
         const res = new InfiniteEvent(this.target, this.event, e);
         this.resolve(<T>(<any>res));
-      });
-    } else if (target instanceof EventEmitter) {
-      target.on(event, (...args) => {
-        const res = new InfiniteEvent(this.target, this.event, args);
-        this.resolve(<T>(<any>res));
-      });
-    } else {
+      };
+      target.addEventListener(event, this.listener);
+    }
+    // else if (target instanceof EventEmitter) {
+    //   this.listener = (...args) => {
+    //     const res = new InfiniteEvent(this.target, this.event, args);
+    //     this.resolve(<T>(<any>res));
+    //   };
+    //   target.on(event, this.listener);
+    // }
+    else {
       throw new Error(`Passed target is not supported:${typeof target}`);
     }
   }
@@ -76,3 +83,5 @@ class InfiniteEvents<T extends InfiniteEvent>
 }
 
 export default InfiniteEvents;
+
+export type { InfiniteEvent };

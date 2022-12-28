@@ -1,0 +1,40 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: #f4f4f4;
+  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  margin: 8px;
+}
+
+main {
+  max-width: 500px;
+  margin: auto;
+  padding: 3em 1em;
+}
+
+h1 {
+  margin: 1rem;
+  text-align: center;
+}
+
+.container {
+  height: 300px;
+  border: 1px solid blue;
+  border-radius: 0.5%;
+  position: relative;
+}
+
+.box {
+  width: 40px;
+  height: 40px;
+  z-index: 1;
+  touch-action: none;
+  background-color: burlywood;
+  position: absolute;
+}
