@@ -2,26 +2,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
 import Stream from '../streams/stream.js';
-import type { getStreamType, getArrayTypes } from '../types.js';
+import type { getStreamType } from '../types.js';
 
 /**
  * Merge multiple input streams together to return a stream whose events
- * are values from each input stream.
+ * are arrays that collect the latest events from each input stream.
+ * Triggered events will be ordered -the latest element will be in the first place
  *
- 
+ *
  * Marble diagram:
  *
  * ```text
- * --1----2-----3--------4---
- * ----a-----b-----c--d------
-  *          merge
- * --1--a--2--b--3--c--d--4---
+ * --1----2-----3--------4---5-
+ * ----a-----b-----c-e-d-------
+ *          mergeOrderedTuple
+ * -[1,undefined]--[a,1]--[2,a]---[b,2]--[3,b]-[c,3]--[e,3]--[d,3]--[4,d]--[5,d]-
  * ```
  */
 
-function merge<A extends Array<Stream<any>>>(
-  ...streams: A
-): Stream<getArrayTypes<{ [P in keyof A]: getStreamType<A[P]> }>> {
+function mergeOrderedTuple<
+  A extends Array<Stream<any>>,
+  R extends { [P in keyof A]: getStreamType<A[P]> | undefined },
+>(...streams: A): Stream<R> {
   const iterable = {
     async *[Symbol.asyncIterator]() {
       const iterators = new Map(
@@ -34,7 +36,16 @@ function merge<A extends Array<Stream<any>>>(
         }),
       );
 
+      const values: { value: any; order: number }[] = new Array(
+        streams.length,
+      ).fill({
+        value: undefined,
+        order: 0,
+      });
+      let idx = 0;
+
       while (true) {
+        idx++;
         const anyIter = new Promise<[number, IteratorResult<any, void>]>(
           (resolve) => {
             for (const [key, promise] of promises) {
@@ -57,7 +68,12 @@ function merge<A extends Array<Stream<any>>>(
           promises.delete(key);
         } else {
           promises.set(key, iterators.get(key)!.next());
-          yield res.value;
+          values[key] = { value: res.value, order: idx };
+          yield <R>[...values]
+            .sort((a, b) => {
+              return b.order - a.order;
+            })
+            .map((el) => el.value);
         }
 
         if (iterators.size === 0) {
@@ -70,4 +86,4 @@ function merge<A extends Array<Stream<any>>>(
   return new Stream(iterable);
 }
 
-export default merge;
+export default mergeOrderedTuple;

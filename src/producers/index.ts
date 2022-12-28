@@ -4,6 +4,7 @@ import InfiniteMap from './infinite_map.js';
 import InfiniteSet from './infinite_set.js';
 import InfiniteEvents from './infinite_events.js';
 import RandomValue from './random_value.js';
+import type { InfiniteEvent } from './infinite_events.js';
 
 export {
   Value,
@@ -13,3 +14,5 @@ export {
   InfiniteEvents,
   RandomValue,
 };
+
+export type { InfiniteEvent };

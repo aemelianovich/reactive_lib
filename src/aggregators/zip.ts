@@ -5,7 +5,7 @@ import type { getStreamType } from '../types.js';
 
 /**
  * Zip multiple input streams together to return a stream whose events
- * are arrays that collect the latest events from each input stream.
+ * are arrays that collect the events from each input stream.
  *
  * It's essentially a way of joining together
  * the events from multiple streams.
@@ -16,7 +16,7 @@ import type { getStreamType } from '../types.js';
  * --1----2-----3--------4---
  * ----a-----b-----c--d------
  *          zip
- * --[1,a]-[2,a]-[2,b]-[3,b]-[3,c]-[3,d]-[4,d]--
+ * --[1,a]--[2,b]---[3,c]----[4,d]--
  * ```
  */
 

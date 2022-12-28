@@ -16,7 +16,12 @@ class InfiniteArray<T>
   implements AsyncIterable<T>
 {
   constructor(arr: Array<T>) {
-    super(...arr);
+    if (arr.length === 1) {
+      super();
+      this.push(arr[0]);
+    } else {
+      super(...arr);
+    }
   }
 
   override push(value: T): number {

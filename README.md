@@ -18,14 +18,20 @@ Basic structures:
   - Aggregator static methods:
     - zip
     - merge
+    - mergeTuple
+    - once
 
 - Producers:
+
   - InfiniteArray
   - InfiniteMap
   - InfiniteSet
   - InfiniteEvents
   - Value
   - RandomValue
+
+- Helper Functions:
+  - applyEventsOrder
 
 ## Stream:
 
@@ -147,6 +153,8 @@ Stream static methods that allowds to aggregate diffirent streams into one
 ```js
 Stream.zip(...streams: Array<Stream<any>>): Stream<Array<any>>
 Stream.merge(...streams: Array<Stream<any>>): Stream<Array<any>>
+Stream.mergeOrderedTuple(...streams: Array<Stream<any>>): Stream<Array<any>>
+Stream.once(stream: Stream<any>): Stream<any>
 ```
 
 ```js
@@ -184,12 +192,44 @@ const mergeStream = Stream.merge(mapStream, stream, takeStream);
     console.log('Merge Stream 2:', value);
   }
 })();
+
+const onceStream = Stream.once(mapStream);
+
+(async () => {
+  for await (const value of onceStream) {
+    console.log('Once Stream 1:', value);
+  }
+})();
+
+(async () => {
+  for await (const value of onceStream) {
+    console.log('Once Stream 2:', value);
+  }
+})();
+
+const mergeTupleStream = Stream.mergeOrderedTuple(
+  mapStream,
+  stream,
+  takeStream,
+);
+
+(async () => {
+  for await (const value of mergeTupleStream) {
+    console.log('Merge Ordered Tuple Stream 1:', value);
+  }
+})();
+
+(async () => {
+  for await (const value of mergeTupleStream) {
+    console.log('Merge Ordered Tuple Stream 2:', value);
+  }
+})();
 ```
 
 ### Zip:
 
 Zips multiple input streams together to return a stream whose events
-are arrays that collect the latest events from each input stream.
+are arrays that collect the events from each input stream.
 
 It's essentially a way of joining together
 the events from multiple streams.
@@ -199,8 +239,8 @@ Marble diagram:
 ```text
 --1----2-----3--------4---
 ----a-----b-----c--d------
-         zip
-----[1,a]-[2,a]-[2,b]-[3,b]-[3,c]-[3,d]-[4,d]--
+           zip
+--[1,a]--[2,b]---[3,c]----[4,d]--
 ```
 
 ### Merge:
@@ -216,6 +256,35 @@ Marble diagram:
          merge
 --1-a--2--b--3--c--d--4---
 ```
+
+### Merge Ordered Tuple:
+
+Merge multiple input streams together to return a stream whose events
+are arrays that collect the latest events from each input stream.
+Triggered events will be ordered -the latest element will be in the first place
+
+Marble diagram:
+
+```text
+--1----2-----3--------4---5-
+----a-----b-----c-e-d-------
+         mergeOrderedTuple
+-[1,undefined]--[a,1]--[2,a]---[b,2]--[3,b]-[c,3]--[e,3]--[d,3]--[4,d]--[5,d]-
+```
+
+````
+
+### Once:
+
+Get input streams and take only the first value
+
+Marble diagram:
+
+```text
+--1----2-----3--------4---
+        once
+----1|
+````
 
 ## Producers:
 
@@ -457,4 +526,44 @@ const iRandomStream = new Stream(infRandomVal)
     console.log('iRandomStream 2:', value);
   }
 })();
+```
+
+## Helper Functions:
+
+Functions that can be used for easier interaction with Stream lib
+
+### applyEventsOrder:
+
+Filter function that allowed to filter events tuple to get events in particular order
+
+```js
+import { applyEventsOrder } from './src';
+
+const myEE = new EventEmitter();
+
+const mousedown$ = new Stream(new InfiniteEvents(myEE, 'mousedown'));
+const mousemove$ = new Stream(new InfiniteEvents(myEE, 'mousemove'));
+const mouseUp$ = new Stream(new InfiniteEvents(myEE, 'mouseup'));
+
+const dnd$ = Stream.mergeOrderedTuple(mousedown$, mousemove$, mouseUp$)
+  .filter((tuple) => applyEventsOrder(tuple, ['mousemove', 'mousedown']))
+  .map((tuple) => tuple[0]?.event ?? 'boom');
+
+(async () => {
+  for await (const value of dnd$) {
+    console.log('DND:', value);
+  }
+})();
+
+setTimeout(() => myEE.emit('mousemove'), 1000);
+setTimeout(() => myEE.emit('mousemove'), 2000);
+setTimeout(() => myEE.emit('mousedown'), 3000);
+setTimeout(() => myEE.emit('mouseup'), 4000);
+setTimeout(() => myEE.emit('mousemove'), 5000);
+setTimeout(() => myEE.emit('mousedown'), 6000);
+setTimeout(() => myEE.emit('mousemove'), 7000);
+setTimeout(() => myEE.emit('mousemove'), 8000);
+setTimeout(() => myEE.emit('mousemove'), 9000);
+setTimeout(() => myEE.emit('mouseup'), 10000);
+setTimeout(() => myEE.emit('mousemove'), 11000);
 ```
